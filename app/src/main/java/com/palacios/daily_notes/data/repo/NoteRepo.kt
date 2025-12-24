@@ -39,4 +39,8 @@ class NoteRepo(
         return noteDao.getAllCategories()
     }
 
+    fun getNotesByCategory(category: String) : Flow<List<Note>>{
+        return noteDao.getNotesByCategory(category)
+    }
+
 }
