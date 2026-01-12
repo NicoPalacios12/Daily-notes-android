@@ -11,5 +11,5 @@ data class Note (
     val description : String,
     val isCompleted : Boolean = false,
     val category : String = "General",
-    val createdAt : Long = System.currentTimeMillis()
+    val createdAt : String = "2026-01-11" // Formato yyyy-MM-dd
 )
