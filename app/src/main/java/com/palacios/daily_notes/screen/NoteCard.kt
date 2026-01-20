@@ -48,7 +48,7 @@ fun NoteItem(
     val (bgColor, borderColor) = if (note.isCompleted) {
         Pair( VerdeFondoCompletada,VerdeBordeCompletada)
     } else {
-        Pair(NaranjaFondoPendiente,NaranjaBordePendiente)
+        Pair(Blanco,NaranjaBordePendiente)
     }
 
     Card(
@@ -175,7 +175,7 @@ fun GreetingPreview() {
                 description = "Descripción de la nota",
                 isCompleted = false,
                 category = "General",
-                createdAt = "2026-02-13" // ejemplo de fecha en formato texto
+                createdAt = "2026-02-13"
             ),
             onClick = { },
             onDelete = { }
