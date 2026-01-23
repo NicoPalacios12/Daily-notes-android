@@ -1,58 +1,46 @@
 package com.palacios.daily_notes.ui.theme
 
+import android.hardware.lights.Light
 import androidx.compose.ui.graphics.Color
 
 //blanco
-val Blanco = Color(0xFFFFFFFF)
+val White = Color(0xFFFFFFFF)
+
+//Button
+val floatButton = Color(0xFFFF9800)
+
+//Purple
+val Purple = Color(0xFF6750A4)
+val LightPurple = Color(0xFFEADDFF)
+val DarkPurple = Color(0xFF21005D)
+val Purple80 = Color(0xFF9575CD)
+
+//Categories
+val Work = Color(0xFF2196F3)
+val Personal = Color(0xFF9C27B0)
+val Shopping = Color(0xFF4CAF50)
+val Health = Color(0xFFE91E63)
+val Study = Color(0xFFFF9800)
+val All = Color(0xFF6750A4)
+val Others = Color(0xFF607D8B)
+
+//Note -> isCompleted
+
+val GreeenBackCompl = Color(0xFFE8F5E9)
+val GreenBorderCompl = Color(0xFF4CAF50)
 
 
-
-//Morados
-
-val MoradoPrincipal = Color(0xFF6750A4)
-val MoradoClaro = Color(0xFFEADDFF)
-val MoradoOscuro = Color(0xFF21005D)
-val MoradoLavanda = Color(0xFF9575CD)
-val MoradoChipActivo = Color(0xFF6750A4)
-val MoradoChipInactivo = Color(0xFFEAE5F3)
-
-
-//Categorias
-
-val MoradoCategoriaFondo = Color(0xFFE8DEF8)
-val MoradoCategoriaTexto = Color(0xFF625B71)
-
-//Tipos de categorias
-
-val Todas = Color(0xFFE8DEF8)
-val Trabajo = Color(0xFFD0BCFF)
-val Personal = Color(0xFFCCC2DC)
-val Viajes = Color(0xFFEFB8C8)
-val Otros = Color(0xFF6650a4)
-
-
-
-
-
-
-
-//Notas -> isCompleted
-
-val VerdeFondoCompletada = Color(0xFFE8F5E9)
-val VerdeBordeCompletada = Color(0xFF4CAF50)
-
-
-//Notas -> isNotCompleted
-
-val NaranjaBordePendiente = Color(0xFFFF9800)
-
+//Note -> isNotCompleted
+val OrangeBackNotCompl = Color(0xFFFF9800)
 
 //Text
+val GrayTextDesc = Color(0xFF666666)
+val GrisTextDate = Color(0xFF999999)
+val GrayTextUne = Color(0xFFBDBDBD)
 
-val GrisTextoDescripcion = Color(0xFF666666)
-val GrisTextoFecha = Color(0xFF999999)
-val GrisTextoDeshabilitado = Color(0xFFBDBDBD)
 
+val GrayLine = Color(0xFFEEEEEE)
+val GrayBorder = Color(0xFFE0E0E0)
 
-val GrisLinea = Color(0xFFEEEEEE)
-val GrisBorde = Color(0xFFE0E0E0)
+//Delete Note
+val Red = Color(0xFFFF0000)

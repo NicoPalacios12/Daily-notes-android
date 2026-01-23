@@ -1,80 +1,41 @@
 package com.palacios.daily_notes.screen
 
-import android.R.attr.title
-import android.icu.util.ULocale
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.data.Group
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import com.palacios.daily_notes.data.entity.Note
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.internal.NavContext
-import com.palacios.daily_notes.data.entity.Note
-import com.palacios.daily_notes.data.noteDataBase.NoteDataBase
-import com.palacios.daily_notes.data.repo.NoteRepo
 import com.palacios.daily_notes.ui.theme.DailynotesTheme
-import com.palacios.daily_notes.screen.AddEditNoteScreen
-import com.palacios.daily_notes.ui.theme.*
+import com.palacios.daily_notes.ui.theme.Purple
+import com.palacios.daily_notes.ui.theme.White
+import com.palacios.daily_notes.ui.theme.All
+import com.palacios.daily_notes.ui.theme.Personal
+import com.palacios.daily_notes.ui.theme.Work
+import com.palacios.daily_notes.ui.theme.Study
+import com.palacios.daily_notes.ui.theme.Health
+import com.palacios.daily_notes.ui.theme.Shopping
+import com.palacios.daily_notes.ui.theme.Others
 import com.palacios.daily_notes.viewmodel.NoteViewModel
-import java.text.SimpleDateFormat
-import java.util.*
-import com.palacios.daily_notes.ui.theme.*
+import com.palacios.daily_notes.ui.theme.floatButton
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +49,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 @Composable
 fun Navigation(
@@ -106,10 +66,12 @@ fun Navigation(
         }
         composable(route = "AddEditNote"){
             AddEditNoteScreen(
-                navController, modifier
+                modifier = modifier,
+                noteViewModel = viewModel(),
+                noteId = null,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
-
     }
 }
 
@@ -121,8 +83,14 @@ fun Home(
     noteViewModel: NoteViewModel = viewModel()
 ){
 
-    var selectedCategory by remember { mutableStateOf("General") }
-    val notes = noteViewModel.getNotesByCategory(selectedCategory).value ?: emptyList()
+    var selectedCategory by remember { mutableStateOf("All") }
+    var notes by remember { mutableStateOf<List<Note>>(emptyList()) }
+
+    LaunchedEffect(selectedCategory) {
+        noteViewModel.getNotesByCategory(selectedCategory).observeForever { newNotes ->
+            notes = newNotes
+        }
+    }
 
     var isSearching by remember { mutableStateOf(false)}
     var searchQuery by remember {mutableStateOf("")}
@@ -143,6 +111,7 @@ fun Home(
         }
     }
 
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -161,8 +130,8 @@ fun Home(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MoradoPrincipal,
-                    titleContentColor = Blanco
+                    containerColor = Purple,
+                    titleContentColor = White
                 ),
                 actions = {
                     IconButton(onClick = {
@@ -176,37 +145,57 @@ fun Home(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate("AddEditNote")
+
+                },
+                modifier = Modifier.padding(20.dp),
+                containerColor = floatButton,
+                contentColor = White,
+                shape = CircleShape
+            ){
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add note"
+                )
+            }
         }
     ) { padding ->
         Column(
             modifier = Modifier.padding(padding)
         ){
+            //CategoryBar
             CategoryBar(
-                categories = listOf("General", "Trabajo", "Personal", "Viajes", "Otros"),
+                categories = listOf("All", "Personal" , "Study", "Work", "Health", "Shopping"),
                 selectedCategory = selectedCategory,
                 onCategorySelected = { selectedCategory = it }
             )
-            // Ici tu peux afficher les notes filtrées
-            // Par exemple :
-            LazyColumn(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                items(filteredNotes){ note ->
-                    NoteItem(
-                        note = note,
-                        onClick = { navController.navigate("AddEditNote") },
-                    ){
-                        noteViewModel.delete(note)
+            // Notes
+            Spacer(modifier = Modifier.height(16.dp))
+            if (notes.isEmpty()) {
+                HomeEmpty(modifier = Modifier.fillMaxSize())
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(filteredNotes) { note ->
+                        NoteItem(
+                            note = note,
+                            onClick = { navController.navigate("AddEditNote") },
+                            onDelete = { noteViewModel.delete(note) },
+                            navController = navController
+                        )
+                        Spacer(modifier = modifier.height(2.dp))
                     }
-
                 }
             }
         }
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,11 +205,13 @@ fun CategoryBar(
     onCategorySelected: (String) -> Unit
 ){
     val categoryColors = mapOf(
-        "Todas" to Todas,
-        "Trabajo" to Trabajo,
+        "All" to All,
         "Personal" to Personal,
-        "Viajes" to Viajes,
-        "Otros" to Otros
+        "Work" to Work,
+        "Study" to Study,
+        "Health" to Health,
+        "Shopping" to Shopping,
+        "Others" to Others
     )
 
     LazyRow(
@@ -244,25 +235,3 @@ fun CategoryBar(
 }
 
 
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreview() {
-    val fakeNotes = listOf(
-        Note(1, "Tareas pendientes", "lavar los platos", true , "Todas", "2024-06-01"),
-        Note(2, "Estudiar", "examen de app mobiles", false, "Trabajo", "2024-06-02")
-    )
-    DailynotesTheme {
-
-        Column {
-            fakeNotes.forEach { note ->
-                Text(note.title)
-                Text(note.description)
-                Text(note.createdAt)
-                Text(note.category)
-                Text(note.isCompleted.toString())
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
-    }
-}

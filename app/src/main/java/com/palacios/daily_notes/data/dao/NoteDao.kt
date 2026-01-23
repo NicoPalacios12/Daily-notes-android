@@ -31,6 +31,13 @@ interface NoteDao {
     @Query("SELECT DISTINCT category FROM notes ORDER BY category ASC")
     fun getAllCategories(): Flow<List<String>>
 
-    @Query("SELECT * FROM notes WHERE category = :category ORDER BY createdAt DESC")
+    @Query("""
+        SELECT * FROM notes 
+        WHERE CASE 
+            WHEN :category = 'All' THEN 1
+            ELSE CASE WHEN category = :category THEN 1 ELSE 0 END
+        END
+        ORDER BY createdAt DESC
+    """)
     fun getNotesByCategory(category: String): Flow<List<Note>>
 }

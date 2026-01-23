@@ -31,6 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.palacios.daily_notes.data.entity.Note
 import com.palacios.daily_notes.ui.theme.DailynotesTheme
 import com.palacios.daily_notes.ui.theme.*
@@ -44,11 +46,12 @@ fun NoteItem(
     note: Note,
     onClick: () -> Unit,
     onDelete: () -> Unit,
+    navController: NavHostController
 ) {
     val (bgColor, borderColor) = if (note.isCompleted) {
-        Pair( VerdeFondoCompletada,VerdeBordeCompletada)
+        Pair( GreeenBackCompl,GreenBorderCompl)
     } else {
-        Pair(Blanco,NaranjaBordePendiente)
+        Pair(White,OrangeBackNotCompl)
     }
 
     Card(
@@ -62,11 +65,14 @@ fun NoteItem(
         ),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp
+            defaultElevation = 2.dp
         )
     ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            // BORDE DE COLOR
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .clickable{navController.navigate("AddEditNote/${note.id}")}
+        ) {
+            // Border Color
             Spacer(
                 modifier = Modifier
                     .width(4.dp)
@@ -74,13 +80,13 @@ fun NoteItem(
                     .background(borderColor)
             )
 
-            // CONTENIDO
+            // Content
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(12.dp)
             ) {
-                // Título
+                // Title
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -102,7 +108,7 @@ fun NoteItem(
                     }
                 }
 
-                // Descripción
+                // Description
                 if (note.description.isNotEmpty()) {
                     Text(
                         text = note.description ,
@@ -114,13 +120,13 @@ fun NoteItem(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                // Categoría + Fecha
+                // Category + Date
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Categoría
+                    // Category
                     Surface(
                         color = Color(0xFFE8DEF8),
                         shape = RoundedCornerShape(8.dp)
@@ -133,7 +139,7 @@ fun NoteItem(
                         )
                     }
 
-                    // Fecha
+                    // Date
                     Text(
                         text = formatDate(note.createdAt),
                         fontSize = 12.sp,
@@ -168,6 +174,7 @@ fun formatDate(dateString: String): String {
 @Composable
 fun GreetingPreview() {
     DailynotesTheme {
+        val navController = rememberNavController()
         NoteItem(
             note = Note(
                 id = 1,
@@ -178,7 +185,8 @@ fun GreetingPreview() {
                 createdAt = "2026-02-13"
             ),
             onClick = { },
-            onDelete = { }
+            onDelete = { },
+            navController = navController
         )
     }
 }
