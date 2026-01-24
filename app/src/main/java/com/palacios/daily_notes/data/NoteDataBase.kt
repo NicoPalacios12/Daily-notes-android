@@ -10,7 +10,7 @@ import com.palacios.daily_notes.data.dao.NoteDao
 
 @Database(
     entities = [Note::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class NoteDataBase : RoomDatabase(){
@@ -25,7 +25,9 @@ abstract class NoteDataBase : RoomDatabase(){
                     context.applicationContext,
                     NoteDataBase::class.java,
                     "Note_database"
-                ).build()
+                )
+                .fallbackToDestructiveMigration()
+                .build()
                 INSTANCE = instance
                 instance
             }

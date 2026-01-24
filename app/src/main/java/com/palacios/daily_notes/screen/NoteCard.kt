@@ -2,8 +2,11 @@ package com.palacios.daily_notes.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -31,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.palacios.daily_notes.data.entity.Note
@@ -38,15 +43,27 @@ import com.palacios.daily_notes.ui.theme.DailynotesTheme
 import com.palacios.daily_notes.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.palacios.daily_notes.viewmodel.NoteViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteItem(
     note: Note,
-    onClick: () -> Unit,
-    onDelete: () -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: NoteViewModel = viewModel(),
+    onDelete: () -> Unit = {
+        viewModel.delete(note)
+    },
+    onClick: () -> Unit = {
+        try {
+            navController.navigate("AddEditNote/${note.id}")
+        } catch (e: Exception) {
+            println("Error al navegar a AddEditNote: ${e.message}")
+        }
+    }
+
+
 ) {
     val (bgColor, borderColor) = if (note.isCompleted) {
         Pair( GreeenBackCompl,GreenBorderCompl)
@@ -54,25 +71,23 @@ fun NoteItem(
         Pair(White,OrangeBackNotCompl)
     }
 
-    Card(
+    val categoryColor = Color(note.categoryColor.toULong())
+
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(bgColor, RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        ),
+        color = bgColor,
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
+        shadowElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .clickable{navController.navigate("AddEditNote/${note.id}")}
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
         ) {
-            // Border Color
+            // Border
             Spacer(
                 modifier = Modifier
                     .width(4.dp)
@@ -86,7 +101,7 @@ fun NoteItem(
                     .weight(1f)
                     .padding(12.dp)
             ) {
-                // Title
+                // Títle
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -95,55 +110,76 @@ fun NoteItem(
                     Text(
                         text = if (note.isCompleted) "✓ ${note.title}" else "☐ ${note.title}",
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        modifier = Modifier.weight(1f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
-                    IconButton(onClick = { onDelete() }) {
+                    IconButton(
+                        onClick = { onDelete() },
+                        modifier = Modifier.size(32.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Eliminar",
-                            tint = Color.Gray,
+                            tint = GrayLine,
                             modifier = Modifier.size(20.dp)
                         )
                     }
                 }
 
-                // Description
+                // Descripción
                 if (note.description.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = note.description ,
+                        text = note.description,
                         fontSize = 14.sp,
-                        color = Color(0xFF666666),
+                        color = GrayTextDesc,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                // Category + Date
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Categoría + Fecha
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Category
+                    // Categoría
                     Surface(
-                        color = Color(0xFFE8DEF8),
+                        color = categoryColor.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text(
-                            text = note.category,
-                            fontSize = 12.sp,
-                            color = Color(0xFF625B71),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+
+                            Box(
+                                modifier = Modifier
+                                    .size(12.dp)
+                                    .background(categoryColor, CircleShape)
+                            )
+
+                            Text(
+                                text = note.category,
+                                fontSize = 12.sp,
+                                color = categoryColor,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
 
-                    // Date
+                    // Fecha
                     Text(
                         text = formatDate(note.createdAt),
                         fontSize = 12.sp,
-                        color = Color(0xFF999999)
+                        color = GrayTextUne
                     )
                 }
             }
@@ -169,24 +205,3 @@ fun formatDate(dateString: String): String {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DailynotesTheme {
-        val navController = rememberNavController()
-        NoteItem(
-            note = Note(
-                id = 1,
-                title = "Título de la nota",
-                description = "Descripción de la nota",
-                isCompleted = false,
-                category = "General",
-                createdAt = "2026-02-13"
-            ),
-            onClick = { },
-            onDelete = { },
-            navController = navController
-        )
-    }
-}

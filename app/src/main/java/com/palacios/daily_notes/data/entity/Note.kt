@@ -11,5 +11,6 @@ data class Note (
     val description : String,
     val isCompleted : Boolean = false,
     val category : String = "General",
+    val categoryColor : Long = 0xFF6750A4,
     val createdAt : String = "2026-01-11" // Formato yyyy-MM-dd
 )

@@ -22,7 +22,9 @@ import com.palacios.daily_notes.data.entity.Note
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.palacios.daily_notes.ui.theme.DailynotesTheme
 import com.palacios.daily_notes.ui.theme.Purple
 import com.palacios.daily_notes.ui.theme.White
@@ -64,11 +66,29 @@ fun Navigation(
                 navController,modifier
             )
         }
+        // Ruta para crear nueva nota
         composable(route = "AddEditNote"){
             AddEditNoteScreen(
                 modifier = modifier,
                 noteViewModel = viewModel(),
                 noteId = null,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        // Ruta para editar nota existente
+        composable(
+            route = "AddEditNote/{noteId}",
+            arguments = listOf(
+                navArgument("noteId") {
+                    type = NavType.IntType
+                }
+            )
+        ){backStackEntry ->
+            val noteId = backStackEntry.arguments?.getInt("noteId")
+            AddEditNoteScreen(
+                modifier = modifier,
+                noteViewModel = viewModel(),
+                noteId = noteId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -150,7 +170,6 @@ fun Home(
             FloatingActionButton(
                 onClick = {
                     navController.navigate("AddEditNote")
-
                 },
                 modifier = Modifier.padding(20.dp),
                 containerColor = floatButton,
@@ -185,9 +204,8 @@ fun Home(
                     items(filteredNotes) { note ->
                         NoteItem(
                             note = note,
-                            onClick = { navController.navigate("AddEditNote") },
-                            onDelete = { noteViewModel.delete(note) },
-                            navController = navController
+                            navController = navController,
+                            onDelete = { noteViewModel.delete(note) }
                         )
                         Spacer(modifier = modifier.height(2.dp))
                     }

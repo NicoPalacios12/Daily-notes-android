@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -56,9 +57,22 @@ import com.palacios.daily_notes.ui.theme.Red
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.graphics.Color
+import com.palacios.daily_notes.ui.theme.All
+import com.palacios.daily_notes.ui.theme.GrayTextUne
+import com.palacios.daily_notes.ui.theme.Health
+import com.palacios.daily_notes.ui.theme.Personal
+import com.palacios.daily_notes.ui.theme.Shopping
+import com.palacios.daily_notes.ui.theme.Study
+import com.palacios.daily_notes.ui.theme.Work
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -153,48 +167,67 @@ fun AddEditNoteScreen(
         }
     ){padding ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState())
-            ,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ){
-            //Title
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+        ) {
+            // Campo: Título
+            Text(
+                text = "Título",
+                style = MaterialTheme.typography.labelMedium,
+                color = GrayTextDesc,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Título") },
-                placeholder = { Text("Titulo de la nota")},
+                placeholder = { Text("Ej: Comprar leche", color = GrayTextDesc) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = GrayBorder,
-                    focusedLabelColor = GrayTextDesc
+                    focusedBorderColor = Purple,
+                    unfocusedBorderColor = GrayBorder,
+                    cursorColor = Purple
                 )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            //Description
+            // Campo: Descripción
+            Text(
+                text = "Descripción",
+                style = MaterialTheme.typography.labelMedium,
+                color = GrayTextDesc,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Descripcion") },
-                placeholder = { Text("Agrega tus notas")},
-                modifier = Modifier.fillMaxWidth()
-                    .height(150.dp),
-                maxLines = 9,
+                placeholder = { Text("Agrega más detalles...", color = GrayTextUne) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 120.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = GrayBorder,
-                    focusedLabelColor = GrayTextDesc
+                    focusedBorderColor = Purple,
+                    unfocusedBorderColor = GrayBorder,
+                    cursorColor = Purple
                 )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Categories
+            // Selector de categoría
+            Text(
+                text = "Categoría",
+                style = MaterialTheme.typography.labelMedium,
+                color = GrayTextDesc,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+
             CategorySelector(
                 selectedCategory = category,
                 selectedColor = categoryColor,
@@ -206,17 +239,17 @@ fun AddEditNoteScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            //isCompleted
-
+            // Checkbox
             Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(vertical = 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Text(
                     text = "Marcar como completada",
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Checkbox(
                     checked = isCompleted,
@@ -228,111 +261,276 @@ fun AddEditNoteScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
+            // Botón: Guardar
             Button(
                 onClick = {
-                    if(title.isNotBlank()){
+                    if (title.isNotBlank()) {
                         val note = Note(
                             id = noteId ?: 0,
                             title = title.trim(),
                             description = description.trim(),
-                            isCompleted = isCompleted,
                             category = category,
+                            categoryColor = categoryColor.value.toLong(),
+                            isCompleted = isCompleted,
                             createdAt = currentNote?.createdAt ?: SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                         )
-                        if(noteId == null){
+
+                        if (noteId == null) {
                             noteViewModel.insert(note)
-                        }else{
+                        } else {
                             noteViewModel.update(note)
                         }
+
                         onNavigateBack()
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
-                    .height(55.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 enabled = title.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Purple,
-                    disabledContentColor = LightPurple
-                )
-            ){
+                    disabledContainerColor = GrayTextDesc
+                ),
+                shape = MaterialTheme.shapes.medium
+            ) {
                 Text(
-                    text = if(noteId == null) "Guardar Nota" else "Actualizar Nota",
+                    text = if (noteId == null) "Crear Nota" else "Guardar Cambios",
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Bold,
+                    color = White
                 )
             }
         }
-        if(showDeleteDialog){
-            AlertDialog(
-                onDismissRequest = { showDeleteDialog = false },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = null,
-                        tint = Red,
-                        modifier = Modifier.size(40.dp)
+    }
+
+    // Diálogo de confirmación para eliminar
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            containerColor = White,
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = Red,
+                    modifier = Modifier.size(48.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "¿Eliminar nota?",
+                    fontWeight = FontWeight.Bold,
+                    color = White
+                )
+            },
+            text = {
+                Text(
+                    text = "Esta acción no se puede deshacer. La nota será eliminada permanentemente.",
+                    color = GrayTextDesc
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        currentNote?.let { noteViewModel.delete(it) }
+                        showDeleteDialog = false
+                        onNavigateBack()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Red
                     )
-                },
-                title = {
-                    Text(
-                        text = "Eliminar nota?",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            currentNote?.let {
-                                noteViewModel.delete(it)
-                            }
-                            showDeleteDialog = false
-                            onNavigateBack()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Red)
-                    ) {
-                        Text("Eliminar", color = White)
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = { showDeleteDialog = false }
-                    ) {
-                        Text(
-                            text = "Cancelar",
-                            color = Purple
-                        )
-                    }
+                ) {
+                    Text("Eliminar", color = White)
                 }
-            )
-        }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(
+                        text = "Cancelar",
+                        color = Purple,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        )
+
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategorySelector(
     selectedCategory: String,
     selectedColor: Color,
     onCategorySelected: (String, Color) -> Unit
 ) {
-    // Simplemente un campo de texto editable
-    // El usuario puede escribir la categoría directamente
+    // Categorías predeterminadas
+    val defaultCategories = mapOf(
+        "All" to All,
+        "Work" to Work,
+        "Personal" to Personal,
+        "Shopping" to Shopping,
+        "Health" to Health,
+        "Study" to Study,
 
-    OutlinedTextField(
-        value = selectedCategory,
-        onValueChange = { newCategory ->
-            onCategorySelected(newCategory, selectedColor)
-        },
-        label = { Text("Categoría") },
-        placeholder = { Text("Ej: Trabajo, Personal...") },
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = GrayBorder,
-            focusedLabelColor = GrayTextDesc
-        )
     )
+
+    var expanded by remember { mutableStateOf(false) }
+    var showCustomDialog by remember { mutableStateOf(false) }
+    var customCategory by remember { mutableStateOf("") }
+    var customColor by remember { mutableStateOf(Purple) }
+    var showColorPicker by remember { mutableStateOf(false) }
+
+    Column {
+        // Dropdown SIN ESCRIBIR (readOnly = true)
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = selectedCategory,
+                onValueChange = {},  // ← Vacío, no hace nada
+                readOnly = true,      // ← MUY IMPORTANTE: No se puede escribir
+                label = { Text("Categoría") },
+                leadingIcon = {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(selectedColor, CircleShape)
+                    )
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Purple,
+                    focusedLabelColor = Purple
+                )
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                // Categorías predeterminadas
+                defaultCategories.forEach { (cat, color) ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .background(color, CircleShape)
+                                )
+                                Text(cat)
+                            }
+                        },
+                        onClick = {
+                            onCategorySelected(cat, color)
+                            expanded = false
+                        }
+                    )
+                }
+
+                HorizontalDivider()
+
+                // Opción: Crear nueva categoría
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            "➕ Crear nueva categoría...",
+                            color = Purple,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        showCustomDialog = true
+                    }
+                )
+            }
+        }
+    }
+
+    // Diálogo para crear categoría PERSONALIZADA
+    if (showCustomDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showCustomDialog = false
+                customCategory = ""
+            },
+            title = { Text("Nueva Categoría") },
+            text = {
+                Column {
+                    // Campo para ESCRIBIR el nombre de la categoría
+                    OutlinedTextField(
+                        value = customCategory,
+                        onValueChange = { customCategory = it },
+                        label = { Text("Nombre") },
+                        placeholder = { Text("Ej: Viajes, Ejercicio...") },
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Botón para elegir color
+                    OutlinedButton(
+                        onClick = { showColorPicker = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .background(customColor, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Elegir color")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (customCategory.isNotBlank()) {
+                            onCategorySelected(customCategory.trim(), customColor)
+                            showCustomDialog = false
+                            customCategory = ""
+                            customColor = Purple
+                        }
+                    },
+                    enabled = customCategory.isNotBlank()
+                ) {
+                    Text("Crear")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showCustomDialog = false
+                    customCategory = ""
+                }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    // Selector de color (ColorPickerDialog que te pasé antes)
+    if (showColorPicker) {
+        ColorPickerDialog(
+            selectedColor = customColor,
+            onColorSelected = { customColor = it },
+            onDismiss = { showColorPicker = false }
+        )
+    }
 }
 
 @Composable
