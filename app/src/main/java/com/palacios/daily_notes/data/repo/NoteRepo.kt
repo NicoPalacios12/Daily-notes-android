@@ -2,6 +2,7 @@ package com.palacios.daily_notes.data.repo
 
 import androidx.room.*
 import com.palacios.daily_notes.data.entity.Note
+import com.palacios.daily_notes.data.entity.CategoryWithColor
 import kotlinx.coroutines.flow.Flow
 import com.palacios.daily_notes.data.dao.NoteDao
 
@@ -37,6 +38,10 @@ class NoteRepo(
 
      fun getAllCategories() : Flow<List<String>>{
         return noteDao.getAllCategories()
+    }
+
+    fun getCategoriesWithColors(): Flow<List<CategoryWithColor>> {
+        return noteDao.getCategoriesWithColors()
     }
 
     fun getNotesByCategory(category: String) : Flow<List<Note>>{

@@ -10,7 +10,7 @@ import com.palacios.daily_notes.data.dao.NoteDao
 
 @Database(
     entities = [Note::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class NoteDataBase : RoomDatabase(){

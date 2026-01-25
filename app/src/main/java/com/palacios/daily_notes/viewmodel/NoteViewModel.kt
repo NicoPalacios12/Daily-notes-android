@@ -6,6 +6,7 @@ import com.palacios.daily_notes.data.noteDataBase.NoteDataBase
 import com.palacios.daily_notes.data.repo.NoteRepo
 import androidx.lifecycle.viewModelScope
 import com.palacios.daily_notes.data.entity.Note
+import com.palacios.daily_notes.data.entity.CategoryWithColor
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.launch
@@ -53,8 +54,11 @@ class NoteViewModel (
         return repository.searchNotes(searchQuery).asLiveData()
     }
 
-    //todas las categorias
+    //All categories
     val allCategories : LiveData<List<String>> = repository.getAllCategories().asLiveData()
+
+    // Categoríes with colors
+    val categoriesWithColors: LiveData<List<CategoryWithColor>> = repository.getCategoriesWithColors().asLiveData()
 
     //filtrar porcategories
     fun getNotesByCategory(category : String): LiveData<List<Note>>{

@@ -16,7 +16,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.palacios.daily_notes.data.entity.Note
 import androidx.navigation.NavHostController
@@ -34,7 +36,6 @@ import com.palacios.daily_notes.ui.theme.Work
 import com.palacios.daily_notes.ui.theme.Study
 import com.palacios.daily_notes.ui.theme.Health
 import com.palacios.daily_notes.ui.theme.Shopping
-import com.palacios.daily_notes.ui.theme.Others
 import com.palacios.daily_notes.viewmodel.NoteViewModel
 import com.palacios.daily_notes.ui.theme.floatButton
 
@@ -66,7 +67,7 @@ fun Navigation(
                 navController,modifier
             )
         }
-        // Ruta para crear nueva nota
+
         composable(route = "AddEditNote"){
             AddEditNoteScreen(
                 modifier = modifier,
@@ -75,7 +76,7 @@ fun Navigation(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
-        // Ruta para editar nota existente
+
         composable(
             route = "AddEditNote/{noteId}",
             arguments = listOf(
@@ -105,6 +106,53 @@ fun Home(
 
     var selectedCategory by remember { mutableStateOf("All") }
     var notes by remember { mutableStateOf<List<Note>>(emptyList()) }
+
+    // Default categoríes colors
+    val defaultCategoryColors = mapOf(
+        "All" to All,
+        "Personal" to Personal,
+        "Work" to Work,
+        "Study" to Study,
+        "Health" to Health,
+        "Shopping" to Shopping
+    )
+
+    // Default Categories
+    val defaultCategoriesOrder = listOf("All", "Personal", "Work", "Study", "Health", "Shopping")
+
+    // CategoriesCustoms
+    val customCategoriesWithColors by noteViewModel.categoriesWithColors.observeAsState(emptyList())
+
+
+    LaunchedEffect(customCategoriesWithColors) {
+        println("DEBUG - Categorías personalizadas encontradas: ${customCategoriesWithColors.size}")
+        customCategoriesWithColors.forEach { cat ->
+            println("DEBUG - Categoría: ${cat.category}, Color: ${cat.categoryColor}")
+        }
+    }
+
+
+    val categoriesKey = customCategoriesWithColors.map { "${it.category}:${it.categoryColor}" }.joinToString()
+
+    //Categories colors
+    val allCategoryColors = remember(categoriesKey) {
+        val combined = defaultCategoryColors.toMutableMap()
+        customCategoriesWithColors.forEach { catWithColor ->
+            // Solo agregar si no es una categoría predeterminada
+            if (!defaultCategoryColors.containsKey(catWithColor.category)) {
+                combined[catWithColor.category] = Color(catWithColor.categoryColor.toULong())
+            }
+        }
+        combined.toMap()
+    }
+
+
+    val allCategories = remember(categoriesKey) {
+        defaultCategoriesOrder + customCategoriesWithColors
+            .map { it.category }
+            .filter { !defaultCategoryColors.containsKey(it) }
+            .sorted()
+    }
 
     LaunchedEffect(selectedCategory) {
         noteViewModel.getNotesByCategory(selectedCategory).observeForever { newNotes ->
@@ -188,7 +236,8 @@ fun Home(
         ){
             //CategoryBar
             CategoryBar(
-                categories = listOf("All", "Personal" , "Study", "Work", "Health", "Shopping"),
+                categories = allCategories,
+                categoryColors = allCategoryColors,
                 selectedCategory = selectedCategory,
                 onCategorySelected = { selectedCategory = it }
             )
@@ -219,18 +268,10 @@ fun Home(
 @Composable
 fun CategoryBar(
     categories: List<String>,
+    categoryColors: Map<String, Color>,
     selectedCategory: String,
     onCategorySelected: (String) -> Unit
 ){
-    val categoryColors = mapOf(
-        "All" to All,
-        "Personal" to Personal,
-        "Work" to Work,
-        "Study" to Study,
-        "Health" to Health,
-        "Shopping" to Shopping,
-        "Others" to Others
-    )
 
     LazyRow(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 10.dp),

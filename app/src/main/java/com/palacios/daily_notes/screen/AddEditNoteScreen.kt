@@ -385,15 +385,15 @@ fun CategorySelector(
     var showColorPicker by remember { mutableStateOf(false) }
 
     Column {
-        // Dropdown SIN ESCRIBIR (readOnly = true)
+        // Dropdown
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
             OutlinedTextField(
                 value = selectedCategory,
-                onValueChange = {},  // ← Vacío, no hace nada
-                readOnly = true,      // ← MUY IMPORTANTE: No se puede escribir
+                onValueChange = {},  //
+                readOnly = true,      //
                 label = { Text("Categoría") },
                 leadingIcon = {
                     Box(
@@ -418,7 +418,7 @@ fun CategorySelector(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                // Categorías predeterminadas
+                // Categorías Default
                 defaultCategories.forEach { (cat, color) ->
                     DropdownMenuItem(
                         text = {
@@ -443,7 +443,7 @@ fun CategorySelector(
 
                 HorizontalDivider()
 
-                // Opción: Crear nueva categoría
+                // New Category
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -461,7 +461,7 @@ fun CategorySelector(
         }
     }
 
-    // Diálogo para crear categoría PERSONALIZADA
+    // Create new category
     if (showCustomDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -471,7 +471,7 @@ fun CategorySelector(
             title = { Text("Nueva Categoría") },
             text = {
                 Column {
-                    // Campo para ESCRIBIR el nombre de la categoría
+                    // Name of category
                     OutlinedTextField(
                         value = customCategory,
                         onValueChange = { customCategory = it },
@@ -482,7 +482,7 @@ fun CategorySelector(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Botón para elegir color
+                    // Color
                     OutlinedButton(
                         onClick = { showColorPicker = true },
                         modifier = Modifier.fillMaxWidth()
@@ -523,7 +523,7 @@ fun CategorySelector(
         )
     }
 
-    // Selector de color (ColorPickerDialog que te pasé antes)
+    // Color Selector
     if (showColorPicker) {
         ColorPickerDialog(
             selectedColor = customColor,

@@ -2,6 +2,7 @@ package com.palacios.daily_notes.data.dao
 
 import androidx.room.*
 import com.palacios.daily_notes.data.entity.Note
+import com.palacios.daily_notes.data.entity.CategoryWithColor
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -30,6 +31,10 @@ interface NoteDao {
 
     @Query("SELECT DISTINCT category FROM notes ORDER BY category ASC")
     fun getAllCategories(): Flow<List<String>>
+
+    // Obtener categorías con sus colores
+    @Query("SELECT DISTINCT category, categoryColor FROM notes ORDER BY category ASC")
+    fun getCategoriesWithColors(): Flow<List<CategoryWithColor>>
 
     @Query("""
         SELECT * FROM notes 
