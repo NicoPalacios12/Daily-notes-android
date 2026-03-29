@@ -43,4 +43,4 @@ val GrayLine = Color(0xFFEEEEEE)
 val GrayBorder = Color(0xFFE0E0E0)
 
 //Delete Note
-val Red = Color(0xFFFF0000)
+val Red = Color(0xB0DCDCDC)

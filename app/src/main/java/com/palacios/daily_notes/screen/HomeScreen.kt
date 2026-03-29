@@ -4,11 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -16,7 +21,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.alpha
@@ -27,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.palacios.daily_notes.data.entity.Note
 import com.palacios.daily_notes.ui.theme.DailynotesTheme
 import com.palacios.daily_notes.ui.theme.Purple
 import com.palacios.daily_notes.ui.theme.White
@@ -38,6 +46,8 @@ import com.palacios.daily_notes.ui.theme.Health
 import com.palacios.daily_notes.ui.theme.Shopping
 import com.palacios.daily_notes.viewmodel.NoteViewModel
 import com.palacios.daily_notes.ui.theme.floatButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 
 
 class MainActivity : ComponentActivity() {
@@ -197,6 +207,7 @@ fun Home(
                     }){
                         Icon(
                             imageVector = Icons.Default.Search,
+                            tint = White,
                             contentDescription = "Search note"
                         )
                     }
@@ -239,16 +250,108 @@ fun Home(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(filteredNotes) { note ->
-                        NoteItem(
+                    items(filteredNotes, key = { it.id }) { note ->
+                        SwipeableNoteItem(
                             note = note,
                             navController = navController,
-                            onDelete = { noteViewModel.delete(note) }
+                            onDelete = { noteViewModel.delete(note) },
+                            onComplete = {
+                                if (!note.isCompleted) {
+                                    noteViewModel.update(note.copy(isCompleted = true))
+                                }
+                            }
                         )
                         Spacer(modifier = modifier.height(2.dp))
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SwipeableNoteItem(
+    note: Note,
+    navController: NavHostController,
+    onDelete: () -> Unit,
+    onComplete: () -> Unit
+) {
+    val swipeTriggerDistance = 56.dp
+    var itemHeightPx by remember(note.id) { mutableIntStateOf(0) }
+    val density = LocalDensity.current
+
+    val dismissState =
+        rememberSwipeToDismissBoxState(
+            initialValue = SwipeToDismissBoxValue.Settled,
+            positionalThreshold = { with(density) { swipeTriggerDistance.toPx() } },
+            confirmValueChange = { dismissValue ->
+                when (dismissValue) {
+                    SwipeToDismissBoxValue.StartToEnd -> {
+                        onComplete()
+                        false
+                    }
+                    SwipeToDismissBoxValue.EndToStart -> {
+                        onDelete()
+                        false
+                    }
+                    SwipeToDismissBoxValue.Settled -> true
+                }
+            }
+        )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = true,
+        enableDismissFromEndToStart = true,
+        backgroundContent = {
+            val direction = dismissState.dismissDirection
+            val progress = dismissState.progress.coerceIn(0f, 0.20f)
+
+            val baseColor = when (direction) {
+                SwipeToDismissBoxValue.StartToEnd -> Color(0xFF2E7D32)
+                SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
+                SwipeToDismissBoxValue.Settled -> Color.Transparent
+            }
+            
+            val targetColor = if (direction == SwipeToDismissBoxValue.Settled) {
+                Color.Transparent
+            } else {
+                baseColor.copy(alpha = 0.15f + (0.80f * progress))
+            }
+
+            val animatedBgColor by animateColorAsState(
+                targetValue = targetColor,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+
+            val measuredHeight = with(density) { itemHeightPx.toDp() }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .then(
+                        if (itemHeightPx > 0) Modifier.height(measuredHeight)
+                        else Modifier
+                    )
+                    .background(animatedBgColor, RoundedCornerShape(12.dp))
+            )
+        }
+    ) {
+        Box(
+            modifier = Modifier.onSizeChanged { size ->
+                itemHeightPx = size.height
+            }
+        ) {
+            NoteItem(
+                note = note,
+                navController = navController,
+                onDelete = onDelete
+            )
         }
     }
 }

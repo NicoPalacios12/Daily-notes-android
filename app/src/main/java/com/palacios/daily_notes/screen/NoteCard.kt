@@ -115,18 +115,6 @@ fun NoteItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-
-                    IconButton(
-                        onClick = { onDelete() },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Eliminar",
-                            tint = GrayLine,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
                 }
 
                 // Descripción

@@ -17,12 +17,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,12 +49,9 @@ import com.palacios.daily_notes.ui.theme.White
 import com.palacios.daily_notes.viewmodel.NoteViewModel
 import com.palacios.daily_notes.ui.theme.GrayBorder
 import com.palacios.daily_notes.ui.theme.GrayTextDesc
-import com.palacios.daily_notes.ui.theme.LightPurple
-import com.palacios.daily_notes.ui.theme.Red
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -92,7 +86,6 @@ fun AddEditNoteScreen(
     var isCompleted by remember { mutableStateOf(false) }
     var category by remember { mutableStateOf("All") }
     var categoryColor by remember { mutableStateOf(Purple) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
     var currentNote by remember { mutableStateOf<Note?>(null) }
 
 
@@ -152,16 +145,6 @@ fun AddEditNoteScreen(
                         containerColor = Purple,
                         titleContentColor = White
                     ),
-                    actions = {
-                        IconButton(
-                            onClick = { showDeleteDialog = true }
-                        ){
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete note"
-                            )
-                        }
-                    }
                 )
             }
         }
@@ -239,27 +222,6 @@ fun AddEditNoteScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Checkbox
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Marcar como completada",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Checkbox(
-                    checked = isCompleted,
-                    onCheckedChange = { isCompleted = it },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = Purple,
-                        uncheckedColor = GrayBorder
-                    )
-                )
-            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -306,58 +268,7 @@ fun AddEditNoteScreen(
         }
     }
 
-    // Diálogo de confirmación para eliminar
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            containerColor = White,
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = null,
-                    tint = Red,
-                    modifier = Modifier.size(48.dp)
-                )
-            },
-            title = {
-                Text(
-                    text = "¿Eliminar nota?",
-                    fontWeight = FontWeight.Bold,
-                    color = White
-                )
-            },
-            text = {
-                Text(
-                    text = "Esta acción no se puede deshacer. La nota será eliminada permanentemente.",
-                    color = GrayTextDesc
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        currentNote?.let { noteViewModel.delete(it) }
-                        showDeleteDialog = false
-                        onNavigateBack()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Red
-                    )
-                ) {
-                    Text("Eliminar", color = White)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(
-                        text = "Cancelar",
-                        color = Purple,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        )
 
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
