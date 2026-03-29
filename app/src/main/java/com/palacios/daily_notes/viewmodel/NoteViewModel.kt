@@ -44,18 +44,10 @@ class NoteViewModel (
         return repository.getNoteById(noteId)
     }
 
-    //note by status
-     fun getNoteByStatus(isCompleted : Boolean) : LiveData<List<Note>>{
-        return repository.getNotesByStatus(isCompleted).asLiveData()
-    }
-
     //search notes
     fun searchNote(searchQuery : String) : LiveData<List<Note>>{
         return repository.searchNotes(searchQuery).asLiveData()
     }
-
-    //All categories
-    val allCategories : LiveData<List<String>> = repository.getAllCategories().asLiveData()
 
     // Categoríes with colors
     val categoriesWithColors: LiveData<List<CategoryWithColor>> = repository.getCategoriesWithColors().asLiveData()

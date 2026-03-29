@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.alpha
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.palacios.daily_notes.data.entity.Note
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -106,7 +105,6 @@ fun Home(
 ){
 
     var selectedCategory by remember { mutableStateOf("All") }
-    var notes by remember { mutableStateOf<List<Note>>(emptyList()) }
 
     // Default categoríes colors
     val defaultCategoryColors = mapOf(
@@ -123,14 +121,6 @@ fun Home(
 
     // CategoriesCustoms
     val customCategoriesWithColors by noteViewModel.categoriesWithColors.observeAsState(emptyList())
-
-
-    LaunchedEffect(customCategoriesWithColors) {
-        println("DEBUG - Categorías personalizadas encontradas: ${customCategoriesWithColors.size}")
-        customCategoriesWithColors.forEach { cat ->
-            println("DEBUG - Categoría: ${cat.category}, Color: ${cat.categoryColor}")
-        }
-    }
 
 
     val categoriesKey = customCategoriesWithColors.map { "${it.category}:${it.categoryColor}" }.joinToString()
@@ -155,28 +145,26 @@ fun Home(
             .sorted()
     }
 
-    LaunchedEffect(selectedCategory) {
-        noteViewModel.getNotesByCategory(selectedCategory).observeForever { newNotes ->
-            notes = newNotes
-        }
-    }
-
     var isSearching by remember { mutableStateOf(false)}
     var searchQuery by remember {mutableStateOf("")}
 
-    val filteredNotes = if (searchQuery.isBlank()){
-        notes
-    }else {
-        notes.filter{ note ->
-            note.title.contains(searchQuery,ignoreCase = true) ||
-                    note.description.contains(searchQuery,ignoreCase = true)
-        }
-    }
+    val notesByCategory by noteViewModel
+        .getNotesByCategory(selectedCategory)
+        .observeAsState(emptyList())
 
-    LaunchedEffect(notes) {
-        val list = noteViewModel.allNotes.value
-        list?.forEach { note ->
-            println(note.title)
+    val searchedNotes by noteViewModel
+        .searchNote(searchQuery)
+        .observeAsState(emptyList())
+
+    val filteredNotes = if (searchQuery.isBlank()) {
+        notesByCategory
+    }else {
+        if (selectedCategory == "All") {
+            searchedNotes
+        } else {
+            searchedNotes.filter { note ->
+                note.category == selectedCategory
+            }
         }
     }
 
@@ -244,7 +232,7 @@ fun Home(
             )
             // Notes
             Spacer(modifier = Modifier.height(16.dp))
-            if (notes.isEmpty()) {
+            if (filteredNotes.isEmpty()) {
                 HomeEmpty(modifier = Modifier.fillMaxSize())
             } else {
                 LazyColumn(
