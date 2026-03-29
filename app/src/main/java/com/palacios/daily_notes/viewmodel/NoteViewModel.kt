@@ -60,7 +60,7 @@ class NoteViewModel (
     // Categoríes with colors
     val categoriesWithColors: LiveData<List<CategoryWithColor>> = repository.getCategoriesWithColors().asLiveData()
 
-    //filtrar porcategories
+    //filtrar by Category
     fun getNotesByCategory(category : String): LiveData<List<Note>>{
         return repository.getNotesByCategory(category).asLiveData()
     }

@@ -32,7 +32,7 @@ interface NoteDao {
     @Query("SELECT DISTINCT category FROM notes ORDER BY category ASC")
     fun getAllCategories(): Flow<List<String>>
 
-    // Obtener categorías con sus colores
+    // Categories with their corresponding colors
     @Query("SELECT DISTINCT category, categoryColor FROM notes ORDER BY category ASC")
     fun getCategoriesWithColors(): Flow<List<CategoryWithColor>>
 

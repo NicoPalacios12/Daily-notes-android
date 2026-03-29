@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.alpha
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.palacios.daily_notes.data.entity.Note
 import androidx.navigation.NavHostController
@@ -138,7 +139,7 @@ fun Home(
     val allCategoryColors = remember(categoriesKey) {
         val combined = defaultCategoryColors.toMutableMap()
         customCategoriesWithColors.forEach { catWithColor ->
-            // Solo agregar si no es una categoría predeterminada
+            // only add custom category if it's not already in
             if (!defaultCategoryColors.containsKey(catWithColor.category)) {
                 combined[catWithColor.category] = Color(catWithColor.categoryColor.toULong())
             }
@@ -278,10 +279,13 @@ fun CategoryBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ){
         items(categories){ category ->
+            val isSelected = category == selectedCategory
             val backgroundColor = categoryColors[category] ?: MaterialTheme.colorScheme.primary
 
+            val categorySelected = if(isSelected) 1f else 0.45f
             Button(
                 onClick = { onCategorySelected(category) },
+                modifier = Modifier.alpha(categorySelected),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = backgroundColor
                 )
