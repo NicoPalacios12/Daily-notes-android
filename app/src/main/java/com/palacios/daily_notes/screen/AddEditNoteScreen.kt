@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.palacios.daily_notes.data.entity.Note
+import com.palacios.daily_notes.data.entity.CategoryWithColor
 import com.palacios.daily_notes.ui.theme.Purple
 import com.palacios.daily_notes.ui.theme.White
 import com.palacios.daily_notes.viewmodel.NoteViewModel
@@ -69,6 +71,7 @@ import com.palacios.daily_notes.ui.theme.Study
 import com.palacios.daily_notes.ui.theme.Work
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.emptyList
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,20 +90,17 @@ fun AddEditNoteScreen(
     var category by remember { mutableStateOf("All") }
     var categoryColor by remember { mutableStateOf(Purple) }
     var currentNote by remember { mutableStateOf<Note?>(null) }
-
-
-    val scope = rememberCoroutineScope()
+    val savedCategories by noteViewModel.categoriesWithColors.observeAsState(emptyList())
 
     LaunchedEffect(noteId) {
         noteId?.let { id->
-            scope.launch{
-                currentNote = noteViewModel.getNoteById(id)
-                currentNote?.let{ note ->
-                    title = note.title
-                    description = note.description
-                    category = note.category
-                    isCompleted = note.isCompleted
-                }
+            currentNote = noteViewModel.getNoteById(id)
+            currentNote?.let{ note ->
+                title = note.title
+                description = note.description
+                category = note.category
+                isCompleted = note.isCompleted
+                categoryColor = Color(note.categoryColor.toULong())
             }
         }
     }
@@ -214,6 +214,7 @@ fun AddEditNoteScreen(
             CategorySelector(
                 selectedCategory = category,
                 selectedColor = categoryColor,
+                savedCategories = savedCategories,
                 onCategorySelected = { newCategory, newColor ->
                     category = newCategory
                     categoryColor = newColor
@@ -276,6 +277,7 @@ fun AddEditNoteScreen(
 fun CategorySelector(
     selectedCategory: String,
     selectedColor: Color,
+    savedCategories: List<CategoryWithColor>,
     onCategorySelected: (String, Color) -> Unit
 ) {
     // Categorías predeterminadas
@@ -288,7 +290,11 @@ fun CategorySelector(
         "Study" to Study,
 
     )
+    val customCategories = savedCategories
+        .filter{it.category !in defaultCategories.keys}
+        .associate { it.category to Color(it.categoryColor.toULong()) }
 
+    val allCategories = defaultCategories + customCategories
     var expanded by remember { mutableStateOf(false) }
     var showCustomDialog by remember { mutableStateOf(false) }
     var customCategory by remember { mutableStateOf("") }
@@ -329,8 +335,8 @@ fun CategorySelector(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                // Categorías Default
-                defaultCategories.forEach { (cat, color) ->
+
+                allCategories.forEach { (cat, color) -> 
                     DropdownMenuItem(
                         text = {
                             Row(
@@ -518,4 +524,3 @@ fun ColorPickerDialog(
         }
     )
 }
-
