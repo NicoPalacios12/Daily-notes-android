@@ -336,7 +336,7 @@ fun CategorySelector(
                 onDismissRequest = { expanded = false }
             ) {
 
-                allCategories.forEach { (cat, color) -> 
+                allCategories.forEach { (cat, color) ->
                     DropdownMenuItem(
                         text = {
                             Row(

@@ -29,8 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -77,6 +79,7 @@ fun NoteItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp)
+            .alpha(if (note.isCompleted) 0.6f else 1f)
             .clickable { onClick() },
         color = bgColor,
         shape = RoundedCornerShape(12.dp),
@@ -109,6 +112,8 @@ fun NoteItem(
                 ) {
                     Text(
                         text = if (note.isCompleted) "✓ ${note.title}" else "☐ ${note.title}",
+                        textDecoration = if (note.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
+                        color = if (note.isCompleted) GrayTextUne else Color.Black,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                         modifier = Modifier.weight(1f),
