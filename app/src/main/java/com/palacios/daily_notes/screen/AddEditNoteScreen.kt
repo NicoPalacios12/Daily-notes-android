@@ -51,6 +51,8 @@ import com.palacios.daily_notes.ui.theme.White
 import com.palacios.daily_notes.viewmodel.NoteViewModel
 import com.palacios.daily_notes.ui.theme.GrayBorder
 import com.palacios.daily_notes.ui.theme.GrayTextDesc
+import androidx.compose.ui.res.stringResource
+import com.palacios.daily_notes.R
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.width
@@ -114,13 +116,13 @@ fun AddEditNoteScreen(
                         IconButton(onClick = onNavigateBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Volver",
+                                contentDescription = stringResource(R.string.back),
                                 tint = White
                             )
                         }
                     },
                     title = {
-                        Text(text = "Nueva nota")
+                        Text(text = stringResource(R.string.new_note))
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Purple,
@@ -133,13 +135,13 @@ fun AddEditNoteScreen(
                         IconButton(onClick = onNavigateBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Volver",
+                                contentDescription = stringResource(R.string.back),
                                 tint = White
                             )
                         }
                     },
                     title = {
-                        Text(text = "Editar nota")
+                        Text(text = stringResource(R.string.edit_note))
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Purple,
@@ -158,7 +160,7 @@ fun AddEditNoteScreen(
         ) {
             // Campo: Título
             Text(
-                text = "Título",
+                text = stringResource(R.string.title_label),
                 style = MaterialTheme.typography.labelMedium,
                 color = GrayTextDesc,
                 modifier = Modifier.padding(bottom = 4.dp)
@@ -167,7 +169,6 @@ fun AddEditNoteScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                placeholder = { Text("Ej: Comprar leche", color = GrayTextDesc) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -181,7 +182,7 @@ fun AddEditNoteScreen(
 
             // Campo: Descripción
             Text(
-                text = "Descripción",
+                text = stringResource(R.string.description_label),
                 style = MaterialTheme.typography.labelMedium,
                 color = GrayTextDesc,
                 modifier = Modifier.padding(bottom = 4.dp)
@@ -190,7 +191,7 @@ fun AddEditNoteScreen(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                placeholder = { Text("Agrega más detalles...", color = GrayTextUne) },
+                placeholder = { Text(stringResource(R.string.description_placeholder), color = GrayTextUne) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 120.dp),
@@ -205,7 +206,7 @@ fun AddEditNoteScreen(
 
             // Selector de categoría
             Text(
-                text = "Categoría",
+                text = stringResource(R.string.category_label),
                 style = MaterialTheme.typography.labelMedium,
                 color = GrayTextDesc,
                 modifier = Modifier.padding(bottom = 4.dp)
@@ -260,7 +261,7 @@ fun AddEditNoteScreen(
                 shape = MaterialTheme.shapes.medium
             ) {
                 Text(
-                    text = if (noteId == null) "Crear Nota" else "Guardar Cambios",
+                    text = stringResource(R.string.save_button),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = White
@@ -311,7 +312,7 @@ fun CategorySelector(
                 value = selectedCategory,
                 onValueChange = {},  //
                 readOnly = true,      //
-                label = { Text("Categoría") },
+                label = { Text(stringResource(R.string.category_label)) },
                 leadingIcon = {
                     Box(
                         modifier = Modifier
@@ -364,7 +365,7 @@ fun CategorySelector(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            "➕ Crear nueva categoría...",
+                            "➕ ${stringResource(R.string.create_new_category)}",
                             color = Purple,
                             fontWeight = FontWeight.Bold
                         )
@@ -385,15 +386,15 @@ fun CategorySelector(
                 showCustomDialog = false
                 customCategory = ""
             },
-            title = { Text("Nueva Categoría") },
+            title = { Text(stringResource(R.string.new_category_title)) },
             text = {
                 Column {
                     // Name of category
                     OutlinedTextField(
                         value = customCategory,
                         onValueChange = { customCategory = it },
-                        label = { Text("Nombre") },
-                        placeholder = { Text("Ej: Viajes, Ejercicio...") },
+                        label = { Text(stringResource(R.string.category_name_label)) },
+                        placeholder = { Text(stringResource(R.string.category_name_placeholder)) },
                         singleLine = true
                     )
 
@@ -410,7 +411,7 @@ fun CategorySelector(
                                 .background(customColor, CircleShape)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Elegir color")
+                        Text(stringResource(R.string.choose_color))
                     }
                 }
             },
@@ -426,7 +427,7 @@ fun CategorySelector(
                     },
                     enabled = customCategory.isNotBlank()
                 ) {
-                    Text("Crear")
+                    Text(stringResource(R.string.create_button))
                 }
             },
             dismissButton = {
@@ -434,7 +435,7 @@ fun CategorySelector(
                     showCustomDialog = false
                     customCategory = ""
                 }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.cancel_button))
                 }
             }
         )
@@ -471,10 +472,10 @@ fun ColorPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Elegir Color") },
+        title = { Text(stringResource(R.string.color_picker_title)) },
         text = {
             Column {
-                Text("Selecciona el color")
+                Text(stringResource(R.string.select_color))
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Grid
@@ -519,7 +520,7 @@ fun ColorPickerDialog(
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Cerrar")
+                Text(stringResource(R.string.close_button))
             }
         }
     )

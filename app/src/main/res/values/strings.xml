@@ -1,3 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">daily-notes</string>
+    <!-- Home Screen -->
+    <string name="app_title">Daily notes</string>
+    <string name="search_placeholder">Search</string>
+    <string name="search_note">Search note</string>
+    <string name="add_note">Add note</string>
+    <string name="no_notes">No notes</string>
+
+    <!-- Add/Edit Note Screen -->
+    <string name="new_note">New note</string>
+    <string name="edit_note">Edit note</string>
+    <string name="back">Back</string>
+    <string name="title_label">Title</string>
+    <string name="description_label">Description</string>
+    <string name="description_placeholder">Add more details...</string>
+    <string name="category_label">Category</string>
+    <string name="save_button">Save</string>
+
+    <!-- Categories -->
+    <string name="category_all">All</string>
+    <string name="category_personal">Personal</string>
+    <string name="category_work">Work</string>
+    <string name="category_study">Study</string>
+    <string name="category_health">Health</string>
+    <string name="category_shopping">Shopping</string>
+
+    <!-- Category Dialog -->
+    <string name="create_new_category">Create new category</string>
+    <string name="new_category_title">New Category</string>
+    <string name="category_name_label">Name</string>
+    <string name="category_name_placeholder">E.g: Travel, Exercise...</string>
+    <string name="choose_color">Choose color</string>
+    <string name="create_button">Create</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="color_picker_title">Choose Color</string>
+    <string name="select_color">Select a color</string>
+    <string name="close_button">Close</string>
 </resources>

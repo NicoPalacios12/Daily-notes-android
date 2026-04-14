@@ -48,6 +48,8 @@ import com.palacios.daily_notes.viewmodel.NoteViewModel
 import com.palacios.daily_notes.ui.theme.floatButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.ui.res.stringResource
+import com.palacios.daily_notes.R
 
 
 class MainActivity : ComponentActivity() {
@@ -188,12 +190,12 @@ fun Home(
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it},
-                            placeholder = { Text("Buscar")},
+                            placeholder = { Text(stringResource(R.string.search_placeholder))},
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }else{
-                        Text("Daily notes")
+                        Text(stringResource(R.string.app_title))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -208,7 +210,7 @@ fun Home(
                         Icon(
                             imageVector = Icons.Default.Search,
                             tint = White,
-                            contentDescription = "Search note"
+                            contentDescription = stringResource(R.string.search_note)
                         )
                     }
                 }
@@ -226,7 +228,7 @@ fun Home(
             ){
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = "Add note"
+                    contentDescription = stringResource(R.string.add_note)
                 )
             }
         }

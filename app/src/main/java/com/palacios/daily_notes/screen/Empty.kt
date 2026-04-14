@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.palacios.daily_notes.R
 import com.palacios.daily_notes.ui.theme.DailynotesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,7 +24,7 @@ fun HomeEmpty(
         contentAlignment = Alignment.Center
     ){
         Text(
-            text = "No hay notas",
+            text = stringResource(R.string.no_notes),
             fontWeight = FontWeight.Light,
             fontSize = 20.sp
         )

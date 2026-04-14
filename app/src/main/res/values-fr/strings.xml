@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">daily-notes</string>
+    <!-- Home Screen -->
+    <string name="app_title">Notes quotidiennes</string>
+    <string name="search_placeholder">Rechercher</string>
+    <string name="search_note">Rechercher une note</string>
+    <string name="add_note">Ajouter une note</string>
+    <string name="no_notes">Aucune note</string>
+
+    <!-- Add/Edit Note Screen -->
+    <string name="new_note">Nouvelle note</string>
+    <string name="edit_note">Modifier la note</string>
+    <string name="back">Retour</string>
+    <string name="title_label">Titre</string>
+    <string name="description_label">Description</string>
+    <string name="description_placeholder">Ajoutez plus de détails...</string>
+    <string name="category_label">Catégorie</string>
+    <string name="save_button">Enregistrer</string>
+
+    <!-- Categories -->
+    <string name="category_all">Toutes</string>
+    <string name="category_personal">Personnel</string>
+    <string name="category_work">Travail</string>
+    <string name="category_study">Étude</string>
+    <string name="category_health">Santé</string>
+    <string name="category_shopping">Courses</string>
+
+    <!-- Category Dialog -->
+    <string name="create_new_category">Créer une nouvelle catégorie...</string>
+    <string name="new_category_title">Nouvelle Catégorie</string>
+    <string name="category_name_label">Nom</string>
+    <string name="category_name_placeholder">Ex: Voyages, Exercice...</string>
+    <string name="choose_color">Choisir une couleur</string>
+    <string name="create_button">Créer</string>
+    <string name="cancel_button">Annuler</string>
+    <string name="color_picker_title">Choisir une Couleur</string>
+    <string name="select_color">Sélectionnez une couleur</string>
+    <string name="close_button">Fermer</string>
+</resources>
+
