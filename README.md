@@ -11,3 +11,6 @@ Application Android de gestion de tâches avec catégories personnalisées.
 ## Stack
 - Kotlin + Jetpack Compose
 - Room Database
+
+## DOWNLOAD
+https://github.com/NicoPalacios12/Daily-notes-android/releases/tag/v1.0.0
